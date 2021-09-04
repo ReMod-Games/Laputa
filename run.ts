@@ -19,7 +19,11 @@ build({
         ".css": "file",
         ".wasm": "binary"
     },
-    plugins: [ httpImports({ allowPrivateModules: true, defaultToJavascriptIfNothingElseFound: true }) ],
+    plugins: [
+        httpImports({
+            defaultToJavascriptIfNothingElseFound: true
+        })
+    ],
     bundle: true,
     logLevel: 'debug',
     outdir: "./out/",
