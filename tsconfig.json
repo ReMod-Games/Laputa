@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "lib": [
+            "dom",
+            "deno.ns",
+            "deno.unstable"
+        ]
+    },
+    "exclude": [
+        "https://cdn.esm*"
+    ]
+}
