@@ -1,5 +1,5 @@
 import { HemisphericLight, Vector3, MeshBuilder, Scene, StandardMaterial, Color3, ActionManager, ExecuteCodeAction, Scalar, FollowCamera, MotionBlurPostProcess, Mesh, VertexData, Viewport, Space } from "https://esm.sh/@babylonjs/core@5.0.0-alpha.42";
-import { GrassProceduralTexture } from "https://esm.sh/@babylonjs/procedural-textures@5.0.0-alpha.42";
+
 class PlayerInput {
     inputMap: Map<KeyboardEvent[ "key" ], boolean>;
     vertical = 0;
@@ -74,9 +74,11 @@ export function defaultScene(scene: Scene, _canvas: HTMLCanvasElement) {
 
     groundMat.diffuseColor = new Color3(.9, .6, 0);
     ground.material = groundMat;
-
+    groundMat.backFaceCulling = false;
 
     const customMesh = new Mesh("custom", scene);
+
+    customMesh.material = groundMat;
 
     createMesh(customMesh);
 
