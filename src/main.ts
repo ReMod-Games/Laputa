@@ -6,8 +6,9 @@ import { defaultScene } from "./defaultScene.ts";
 import { createRenderLoop } from "./createRenderLoop.ts";
 
 loadStyle(thing);
-
 const canvas = createPerfectCanvas();
+canvas.requestPointerLock()
+
 const engine = new WebGPUEngine(canvas);
 await engine.initAsync();
 const scene = new Scene(engine);

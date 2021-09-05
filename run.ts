@@ -1,23 +1,25 @@
 import { build } from 'https://deno.land/x/esbuild@v0.12.25/mod.js';
-import { httpImports } from 'https://deno.land/x/esbuild_plugin_http_imports@v1.1.2/index.ts'
+import { httpImports } from 'https://deno.land/x/esbuild_plugin_http_imports@v1.1.3/index.ts'
 import { emptyDir } from "https://deno.land/std@0.106.0/fs/mod.ts";
 
 
 await emptyDir("./out")
 build({
     entryPoints: {
-        "main": "./src/main.ts"
+        "main": "./src/main.ts",
     },
     platform: "browser",
+    target: "esnext",
     format: "esm",
-    treeShaking: 'ignore-annotations',
+    treeShaking: true,
     external: [],
     chunkNames: "chunks/[name]-[hash]",
     watch: true,
     splitting: true,
     loader: {
         ".css": "file",
-        ".wasm": "binary"
+        ".wasm": "binary",
+        ".fx": "text"
     },
     plugins: [
         httpImports({
