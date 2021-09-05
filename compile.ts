@@ -14,7 +14,6 @@ build({
     treeShaking: true,
     external: [],
     chunkNames: "chunks/[name]-[hash]",
-    watch: true,
     splitting: true,
     loader: {
         ".css": "file",
@@ -22,6 +21,12 @@ build({
         ".fx": "text"
     },
     plugins: [
+        {
+            name: "close-on-complete",
+            setup(build) {
+                build.onEnd(() => Deno.exit())
+            }
+        },
         httpImports({
             defaultToJavascriptIfNothingElseFound: true
         })
@@ -30,12 +35,7 @@ build({
     logLevel: 'debug',
     outdir: "./out/",
     minify: true
+
 })
 
 await Deno.copyFile("index.html", "./out/index.html")
-Deno.run({
-    cmd: "deno run --allow-net --allow-read https://deno.land/std@0.106.0/http/file_server.ts ./out".split(" ")
-})
-for await (const _ of Deno.watchFs("index.html")) {
-    Deno.copyFileSync("index.html", "./out/index.html")
-}
