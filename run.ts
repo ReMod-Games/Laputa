@@ -18,7 +18,7 @@ build({
     splitting: true,
     loader: {
         ".css": "file",
-        ".wasm": "binary",
+        ".wasm": "file",
         ".fx": "text"
     },
     plugins: [
@@ -27,7 +27,7 @@ build({
         })
     ],
     bundle: true,
-    logLevel: 'debug',
+    logLevel: 'error',
     outdir: "./out/",
     minify: true
 })

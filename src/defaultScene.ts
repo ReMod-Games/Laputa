@@ -1,55 +1,58 @@
 import { HemisphericLight, Vector3, MeshBuilder, Scene, StandardMaterial, Color3, ActionManager, ExecuteCodeAction, Scalar, FollowCamera, MotionBlurPostProcess, Mesh, VertexData, Viewport, Space } from "https://esm.sh/@babylonjs/core@5.0.0-alpha.42";
+import { MovementControls } from "./consts/MovementControls.ts";
 
-class PlayerInput {
-    inputMap: Map<KeyboardEvent[ "key" ], boolean>;
-    vertical = 0;
-    verticalAxis = 0;
-    horizontal = 0;
-    horizontalAxis = 0;
+function createPlayerMovement(scene: Scene) {
 
-    constructor(scene: Scene) {
-        scene.actionManager = new ActionManager(scene);
-
-        this.inputMap = new Map<string, boolean>();
-        scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyDownTrigger, (evt) => {
-            this.inputMap.set(evt.sourceEvent.key, evt.sourceEvent.type === "keydown");
-        }));
-        scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyUpTrigger, (evt) => {
-            this.inputMap.set(evt.sourceEvent.key, evt.sourceEvent.type === "keydown");
-        }));
-
-        scene.onBeforeRenderObservable.add(() => {
-            this._updateFromKeyboard();
-        });
+    const state = {
+        inputs: new Map<MovementControls, boolean>(),
+        vertical: 0,
+        verticalAxis: 0,
+        horizontal: 0,
+        horizontalAxis: 0,
     }
 
-    private _updateFromKeyboard(): void {
-        const moveStart = 0.05;
+    const accelerationR = 0.04;
+    const speedR = 0.5;
 
-        if (this.inputMap.get("ArrowUp") || this.inputMap.get("w")) {
-            this.vertical = Scalar.Lerp(this.vertical, .5, moveStart);
-            this.verticalAxis = 1;
+    const acceleration = 0.05;
+    const speed = 0.05;
+    scene.actionManager = new ActionManager(scene);
 
-        } else if (this.inputMap.get("ArrowDown") || this.inputMap.get("s")) {
-            this.vertical = Scalar.Lerp(this.vertical, -.5, moveStart);
-            this.verticalAxis = -1;
+    scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyDownTrigger, (evt) => {
+        state.inputs.set(evt.sourceEvent.key, evt.sourceEvent.type === "keydown");
+    }));
+    scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyUpTrigger, (evt) => {
+        state.inputs.set(evt.sourceEvent.key, evt.sourceEvent.type === "keydown");
+    }));
+
+    scene.onBeforeRenderObservable.add(() => {
+        if (state.inputs.get(MovementControls.Forward)) {
+            state.vertical = Scalar.Lerp(state.vertical, speed, acceleration);
+            state.verticalAxis = 1;
+
+        } else if (state.inputs.get(MovementControls.Back)) {
+            state.vertical = Scalar.Lerp(state.vertical, -speed, acceleration);
+            state.verticalAxis = -1;
         } else {
-            this.vertical = 0;
-            this.verticalAxis = 0;
+            state.vertical = 0;
+            state.verticalAxis = 0;
         }
 
-        if (this.inputMap.get("ArrowLeft") || this.inputMap.get("a")) {
-            this.horizontal = Scalar.Lerp(this.horizontal, -.5, moveStart);
-            this.horizontalAxis = -1;
+        if (state.inputs.get(MovementControls.Left)) {
+            state.horizontal = Scalar.Lerp(state.horizontal, -speedR, accelerationR);
+            state.horizontalAxis = -1;
 
-        } else if (this.inputMap.get("ArrowRight") || this.inputMap.get("d")) {
-            this.horizontal = Scalar.Lerp(this.horizontal, .5, moveStart);
-            this.horizontalAxis = 1;
+        } else if (state.inputs.get(MovementControls.Right)) {
+            state.horizontal = Scalar.Lerp(state.horizontal, speedR, accelerationR);
+            state.horizontalAxis = 1;
         }
         else {
-            this.horizontal = 0;
-            this.horizontalAxis = 0;
+            state.horizontal = 0;
+            state.horizontalAxis = 0;
         }
+    });
+    return {
+        state
     }
 }
 
@@ -82,13 +85,47 @@ export function defaultScene(scene: Scene, _canvas: HTMLCanvasElement) {
 
     createMesh(customMesh);
 
-    const cube = MeshBuilder.CreateBox("box", {}, scene);
+    const cube = MeshBuilder.CreateTiledBox("box", { depth: 5 }, scene);
+
     cube.movePOV(0, 1, 0)
-    const input = new PlayerInput(scene);
-    camera.lockedTarget = cube;
+
+    const input = createPlayerMovement(scene);
+
+    const playerHitbox = MeshBuilder.CreateLines("playerHitbox", { points: [] }, scene);
+    playerHitbox.movePOV(0, 2, 0)
+    playerHitbox.outlineWidth = 1
+    playerHitbox.outlineColor = Color3.Black()
+
+    camera.lockedTarget = playerHitbox;
     scene.onBeforeRenderObservable.add(() => {
-        cube.movePOV(input.horizontalAxis, 0, input.verticalAxis);
+        const right = input.state.inputs.get(MovementControls.Right);
+        const left = input.state.inputs.get(MovementControls.Left);
+        const back = input.state.inputs.get(MovementControls.Back);
+        const forward = input.state.inputs.get(MovementControls.Forward);
+
+        // console.log(cube.rotation.y, input.horizontal, input.vertical)
+        playerHitbox.position.copyFrom(cube.position);
+        const fullcycle = Math.PI * 2;
+        const rotation = cube.rotation.y / fullcycle
+
+        console.log(rotation)
+        if (left) {
+            cube.rotatePOV(0, calculateRotation(0.75, rotation, fullcycle, rotation < 0.75), 0)
+        }
+        if (right) {
+            cube.rotatePOV(0, calculateRotation(0.25, rotation, fullcycle, rotation < 0.25), 0)
+        }
+        if (back) {
+            cube.rotatePOV(0, calculateRotation(0.50, rotation, fullcycle, rotation < 0.5), 0)
+        }
+        if (forward) {
+            cube.rotatePOV(0, calculateRotation(0.00, rotation, fullcycle, rotation > 0), 0)
+        }
     });
+}
+
+function calculateRotation(target: number, rotation: number, fullcycle: number, reverse = false): number {
+    return ((((reverse ? -1 : 0) + target) - rotation) / 10) * fullcycle;
 }
 
 function createMesh(customMesh: Mesh) {
