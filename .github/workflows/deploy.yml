@@ -27,5 +27,5 @@ jobs:
           user: ${{ secrets.WEBSERVER_USERNAME }}
           pass: ${{ secrets.WEBSERVER_PASSWORD }}
           port: ${{ secrets.WEBSERVER_PORT }}
-          local: "./out"
+          local: "./out/*"
           remote: ~/remod/laputa/
