@@ -78,6 +78,18 @@ export function defaultScene(scene: Scene, _canvas: HTMLCanvasElement) {
 
     const customMesh = new Mesh("custom", scene);
 
+    createMesh(customMesh);
+
+    const cube = MeshBuilder.CreateBox("box", {}, scene);
+    cube.movePOV(0, 1, 0)
+    const input = new PlayerInput(scene);
+    camera.lockedTarget = cube;
+    scene.onBeforeRenderObservable.add(() => {
+        cube.movePOV(input.horizontalAxis, 0, input.verticalAxis);
+    });
+}
+
+function createMesh(customMesh: Mesh) {
     const positions = [ -5, 2, -3, -7, -2, -3, -3, -2, -3, 5, 2, 3, 7, -2, 3, 3, -2, 3 ];
     const indices = [ 0, 1, 2, 3, 4, 5 ];
 
@@ -94,14 +106,4 @@ export function defaultScene(scene: Scene, _canvas: HTMLCanvasElement) {
     vertexData.normals = normals; //Assignment of normal to vertexData added
 
     vertexData.applyToMesh(customMesh);
-
-
-
-    const cube = MeshBuilder.CreateBox("box", {}, scene);
-    cube.movePOV(0, 1, 0)
-    const input = new PlayerInput(scene);
-    camera.lockedTarget = cube;
-    scene.onBeforeRenderObservable.add(() => {
-        cube.movePOV(input.horizontalAxis, 0, input.verticalAxis);
-    });
 }
