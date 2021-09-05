@@ -1,4 +1,4 @@
-import { HemisphericLight, Vector3, MeshBuilder, Scene, StandardMaterial, Color3, ActionManager, ExecuteCodeAction, Scalar, FollowCamera, MotionBlurPostProcess, Mesh, VertexData, Viewport, Space } from "https://esm.sh/@babylonjs/core@5.0.0-alpha.42";
+import { HemisphericLight, Vector3, MeshBuilder, Scene, StandardMaterial, Color3, ActionManager, ExecuteCodeAction, Scalar, FollowCamera, Mesh, VertexData } from "https://esm.sh/@babylonjs/core@5.0.0-alpha.42";
 import { MovementControls } from "./consts/MovementControls.ts";
 
 function createPlayerMovement(scene: Scene) {
@@ -113,13 +113,13 @@ export function defaultScene(scene: Scene, _canvas: HTMLCanvasElement) {
             cube.rotatePOV(0, calculateRotation(0.75, rotation, fullcycle, rotation < 0.75), 0)
         }
         if (right) {
-            cube.rotatePOV(0, calculateRotation(0.25, rotation, fullcycle, rotation < 0.25), 0)
+            cube.rotatePOV(0, calculateRotation(0.25, rotation, fullcycle, rotation > 0.25), 0)
         }
         if (back) {
             cube.rotatePOV(0, calculateRotation(0.50, rotation, fullcycle, rotation < 0.5), 0)
         }
         if (forward) {
-            cube.rotatePOV(0, calculateRotation(0.00, rotation, fullcycle, rotation > 0), 0)
+            cube.rotatePOV(0, calculateRotation(1, rotation, fullcycle, rotation < 1), 0)
         }
     });
 }
