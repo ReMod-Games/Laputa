@@ -17,9 +17,6 @@ jobs:
         with:
           deno-version: v1.x
 
-      - name: Run linter
-        run: deno lint
-
       - name: Compile HmSYS
         run: deno run --config=tsconfig.json -A --no-check ./compile.ts
 
