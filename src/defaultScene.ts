@@ -79,14 +79,11 @@ export function defaultScene(scene: Scene, _canvas: HTMLCanvasElement) {
     ground.material = groundMat;
     groundMat.backFaceCulling = false;
 
-    const customMesh = new Mesh("custom", scene);
-
-    customMesh.material = groundMat;
-
-    createMesh(customMesh);
+    // const customMesh = new Mesh("custom", scene);
+    // customMesh.material = groundMat;
+    // createMesh(customMesh);
 
     const cube = MeshBuilder.CreateTiledBox("box", { depth: 5 }, scene);
-
     cube.movePOV(0, 1, 0)
 
     const input = createPlayerMovement(scene);
@@ -108,24 +105,22 @@ export function defaultScene(scene: Scene, _canvas: HTMLCanvasElement) {
         const fullcycle = Math.PI * 2;
         const rotation = cube.rotation.y / fullcycle
 
-        console.log(rotation)
-        if (left) {
-            cube.rotatePOV(0, calculateRotation(0.75, rotation, fullcycle, rotation < 0.75), 0)
+        // console.log(rotation)
+
+        if (forward) {
+            cube.rotatePOV(0, Scalar.DeltaAngle(rotation, 0) / 5, 0)
         }
         if (right) {
-            cube.rotatePOV(0, calculateRotation(0.25, rotation, fullcycle, rotation > 0.25), 0)
+            cube.rotatePOV(0, Scalar.DeltaAngle(rotation, 0.25) / 5, 0)
         }
         if (back) {
-            cube.rotatePOV(0, calculateRotation(0.50, rotation, fullcycle, rotation < 0.5), 0)
+            cube.rotatePOV(0, Scalar.DeltaAngle(rotation, 0.5) / 5, 0)
         }
-        if (forward) {
-            cube.rotatePOV(0, calculateRotation(1, rotation, fullcycle, rotation < 1), 0)
+        if (left) {
+            cube.rotatePOV(0, Scalar.DeltaAngle(rotation, 0.75) / 5, 0)
         }
-    });
-}
 
-function calculateRotation(target: number, rotation: number, fullcycle: number, reverse = false): number {
-    return ((((reverse ? -1 : 0) + target) - rotation) / 10) * fullcycle;
+    });
 }
 
 function createMesh(customMesh: Mesh) {
