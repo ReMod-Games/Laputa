@@ -8,7 +8,7 @@ import { defaultScene } from "./defaultScene.ts";
 loadStyle(thing);
 const canvas = createPerfectCanvas();
 
-//either webgl or webgpu, depending on if webgpu is supported.
+//This line of code querys the browser for support for the WebGPU Specifications (https://www.w3.org/TR/webgpu/) and if it is supported, then it will attempt to initialize the canvas with WebGPU enabled. If the browser doesn't support the WebGPU specifications (https://www.w3.org/TR/webgpu/) then it will attempt to initialize the canvas with WebGL instead.
 const engine = await (await import(navigator.gpu ? "./engines/webgpu.ts" : "./engines/webgl.ts")).default(canvas);
 
 const scene = new Scene(engine);
