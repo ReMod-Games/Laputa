@@ -8,6 +8,7 @@ import { defaultScene } from "./defaultScene.ts";
 loadStyle(thing);
 const canvas = createPerfectCanvas();
 
+//either webgl or webgpu, depending on if webgpu is supported.
 const engine = await (await import(navigator.gpu ? "./engines/webgpu.ts" : "./engines/webgl.ts")).default(canvas);
 
 const scene = new Scene(engine);
