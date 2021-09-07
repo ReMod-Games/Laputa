@@ -94,6 +94,7 @@ export function defaultScene(scene: Scene, _canvas: HTMLCanvasElement) {
     playerHitbox.outlineColor = Color3.Black()
 
     camera.lockedTarget = playerHitbox;
+    let step = 0
     scene.onBeforeRenderObservable.add(() => {
         const right = input.state.inputs.get(MovementControls.Right);
         const left = input.state.inputs.get(MovementControls.Left);
@@ -103,23 +104,24 @@ export function defaultScene(scene: Scene, _canvas: HTMLCanvasElement) {
         // console.log(cube.rotation.y, input.horizontal, input.vertical)
         playerHitbox.position.copyFrom(cube.position);
         const fullcycle = Math.PI * 2;
-        const rotation = cube.rotation.y / fullcycle
-
-        // console.log(rotation)
-
-        if (forward) {
-            cube.rotatePOV(0, Scalar.DeltaAngle(rotation, 0) / 5, 0)
+        const rotDenormal = parseFloat(((Scalar.Denormalize(cube.rotation.y / fullcycle, -1, 1)) * 100).toPrecision(2)) / 100;
+        if ((back && left) || (right && back)) return;
+        if (back || step == 2) {
+            step = 2
+            cube.rotatePOV(0, (Scalar.DeltaAngle(rotDenormal, rotDenormal > 0 ? 1 : -1) / 4) * 2, 0)
         }
-        if (right) {
-            cube.rotatePOV(0, Scalar.DeltaAngle(rotation, 0.25) / 5, 0)
+        if (right || step == 1) {
+            step = 1
+            cube.rotatePOV(0, (Scalar.DeltaAngle(rotDenormal, 0.5) / 4) * 2, 0)
         }
-        if (back) {
-            cube.rotatePOV(0, Scalar.DeltaAngle(rotation, 0.5) / 5, 0)
+        if (left || step == 3) {
+            step = 3
+            cube.rotatePOV(0, (Scalar.DeltaAngle(rotDenormal, -0.5) / 4) * 2, 0)
         }
-        if (left) {
-            cube.rotatePOV(0, Scalar.DeltaAngle(rotation, 0.75) / 5, 0)
+        if (forward || step == 0) {
+            step = 0
+            cube.rotatePOV(0, (Scalar.DeltaAngle(rotDenormal, 0) / 4) * 2, 0)
         }
-
     });
 }
 
