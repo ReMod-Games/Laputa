@@ -14,4 +14,4 @@ const scene = new Scene(engine);
 defaultScene(scene, canvas);
 createRenderLoop(engine, scene)
 
-console.timeEnd()
+console.timeEnd()s
