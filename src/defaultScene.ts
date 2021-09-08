@@ -1,60 +1,6 @@
-import { HemisphericLight, Vector3, MeshBuilder, Scene, StandardMaterial, Color3, ActionManager, ExecuteCodeAction, Scalar, FollowCamera, Mesh, VertexData } from "https://esm.sh/@babylonjs/core@5.0.0-alpha.42";
+import { HemisphericLight, Vector3, MeshBuilder, Scene, StandardMaterial, Color3, Scalar, FollowCamera } from "https://esm.sh/@babylonjs/core@5.0.0-alpha.42";
 import { MovementControls } from "./consts/MovementControls.ts";
-
-function createPlayerMovement(scene: Scene) {
-
-    const state = {
-        inputs: new Map<MovementControls, boolean>(),
-        vertical: 0,
-        verticalAxis: 0,
-        horizontal: 0,
-        horizontalAxis: 0,
-    }
-
-    const accelerationR = 0.04;
-    const speedR = 0.5;
-
-    const acceleration = 0.05;
-    const speed = 0.05;
-    scene.actionManager = new ActionManager(scene);
-
-    scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyDownTrigger, (evt) => {
-        state.inputs.set(evt.sourceEvent.key, evt.sourceEvent.type === "keydown");
-    }));
-    scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyUpTrigger, (evt) => {
-        state.inputs.set(evt.sourceEvent.key, evt.sourceEvent.type === "keydown");
-    }));
-
-    scene.onBeforeRenderObservable.add(() => {
-        if (state.inputs.get(MovementControls.Forward)) {
-            state.vertical = Scalar.Lerp(state.vertical, speed, acceleration);
-            state.verticalAxis = 1;
-
-        } else if (state.inputs.get(MovementControls.Back)) {
-            state.vertical = Scalar.Lerp(state.vertical, -speed, acceleration);
-            state.verticalAxis = -1;
-        } else {
-            state.vertical = 0;
-            state.verticalAxis = 0;
-        }
-
-        if (state.inputs.get(MovementControls.Left)) {
-            state.horizontal = Scalar.Lerp(state.horizontal, -speedR, accelerationR);
-            state.horizontalAxis = -1;
-
-        } else if (state.inputs.get(MovementControls.Right)) {
-            state.horizontal = Scalar.Lerp(state.horizontal, speedR, accelerationR);
-            state.horizontalAxis = 1;
-        }
-        else {
-            state.horizontal = 0;
-            state.horizontalAxis = 0;
-        }
-    });
-    return {
-        state
-    }
-}
+import { createPlayerMovement } from "./helper/createPlayerMovement.ts";
 
 export function defaultScene(scene: Scene, _canvas: HTMLCanvasElement) {
     const camera = new FollowCamera("camera", new Vector3(0, 0, 0), scene);
@@ -123,23 +69,4 @@ export function defaultScene(scene: Scene, _canvas: HTMLCanvasElement) {
             cube.rotatePOV(0, (Scalar.DeltaAngle(rotDenormal, 0) / 4) * 2, 0)
         }
     });
-}
-
-function createMesh(customMesh: Mesh) {
-    const positions = [ -5, 2, -3, -7, -2, -3, -3, -2, -3, 5, 2, 3, 7, -2, 3, 3, -2, 3 ];
-    const indices = [ 0, 1, 2, 3, 4, 5 ];
-
-    //Empty array to contain calculated values or normals added
-    const normals: number[] = [];
-
-    //Calculations of normals added
-    VertexData.ComputeNormals(positions, indices, normals);
-
-    const vertexData = new VertexData();
-
-    vertexData.positions = positions;
-    vertexData.indices = indices;
-    vertexData.normals = normals; //Assignment of normal to vertexData added
-
-    vertexData.applyToMesh(customMesh);
 }

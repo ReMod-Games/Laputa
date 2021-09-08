@@ -24,7 +24,7 @@ build({
         {
             name: "close-on-complete",
             setup(build) {
-                build.onEnd(() => Deno.exit())
+                build.onEnd((result) => Deno.exit(result.errors.length))
             }
         },
         httpImports({

@@ -3,7 +3,7 @@ import thing from "../css/main.css";
 import { Scene } from "https://esm.sh/@babylonjs/core@5.0.0-alpha.42";
 import { loadStyle } from "./helper/loader.ts";
 import { createPerfectCanvas } from "./helper/canvas.ts";
-import { createRenderLoop } from "./createRenderLoop.ts";
+import { createRenderLoop } from "./helper/createRenderLoop.ts";
 import { defaultScene } from "./defaultScene.ts";
 loadStyle(thing);
 const canvas = createPerfectCanvas();
