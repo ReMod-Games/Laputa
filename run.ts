@@ -38,4 +38,6 @@ Deno.run({
 })
 for await (const _ of Deno.watchFs("index.html")) {
     Deno.copyFileSync("index.html", "./out/index.html")
+	Deno.copyFileSync("/.src/assets", "./out/assets")
+	Deno.copyFileSync("/.src/data", "./out/data")
 }
